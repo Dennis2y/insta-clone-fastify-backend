@@ -2,6 +2,7 @@ import Fastify from "fastify"
 import databasePlugin from "./core/database/database.plugin"
 import postsRoutes from "./modules/posts/posts.routes"
 
+import reelsRoutes from "./modules/reels/reels.routes"
 const fastify = Fastify({ logger: true })
 
 fastify.get("/", async () => ({ hello: "world" }))
@@ -9,6 +10,7 @@ fastify.get("/", async () => ({ hello: "world" }))
 fastify.register(databasePlugin)
 fastify.register(postsRoutes)
 
+fastify.register(reelsRoutes)
 const port = 3000
 
 const start = async () => {
