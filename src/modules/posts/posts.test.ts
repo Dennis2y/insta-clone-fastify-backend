@@ -15,6 +15,8 @@ describe("POST /posts", () => {
     // Mock data layer (no DB in this test)
     app.decorate("transactions", {
       posts: {
+        getAll: jest.fn(),
+        getById: jest.fn(),
         create: jest.fn().mockReturnValue(createdPost),
       },
     })
