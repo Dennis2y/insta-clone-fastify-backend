@@ -1,26 +1,33 @@
-import Fastify from "fastify"
-import reelsRoutes from "./reels.routes"
+import Fastify from "fastify";
 
-describe("GET /reels/grid", () => {
-  it("should return reels grid with 200", async () => {
-    const app = Fastify()
+import databasePlugin from "../../core/database/database.plugin";
+import reelsRoutes from "./reels.routes";
 
-    // minimal mock to satisfy types later (we'll expand when implementing reels)
-    app.decorate("transactions", {
-      posts: {
-        getById: jest.fn(),
-        getAll: jest.fn(),
-        create: jest.fn(),
-      },
-      reels: {
-        getGrid: jest.fn().mockReturnValue([]),
-      },
-    } as any)
+describe("GET /api/reels/grid", () => {
+  it("should return reels grid with 200 and valid shape", async () => {
+    const app = Fastify();
 
-    await app.register(reelsRoutes)
+    await app.register(databasePlugin);
+    await app.register(reelsRoutes, { prefix: "/api" });
 
-    const res = await app.inject({ method: "GET", url: "/reels/grid" })
-    expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual([])
-  })
-})
+    const res = await app.inject({ method: "GET", url: "/api/reels/grid" });
+
+    expect(res.statusCode).toBe(200);
+
+    const data = res.json();
+
+    expect(Array.isArray(data)).toBe(true);
+
+    // If there are reels, validate shape of the first item
+    if (data.length > 0) {
+      const r = data[0];
+      expect(r).toHaveProperty("id");
+      expect(r).toHaveProperty("video_url");
+      expect(r).toHaveProperty("cover_image_url");
+      expect(r).toHaveProperty("caption");
+      expect(r).toHaveProperty("created_at");
+    }
+
+    await app.close();
+  });
+});
