@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+build/
+.vite/
+.cache/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+
+# SQLite / local data
+*.sqlite
+*.sqlite3
+database.db
+
+# accidental scratch files
+somefile
+insta-clone-react-frontend/
