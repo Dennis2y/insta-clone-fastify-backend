@@ -1,20 +1,20 @@
-
-import type { FastifyPluginAsync } from "fastify"
-import { postsService } from "./posts.service"
-import type { CreatePostDto } from "./posts.types"
+import type { FastifyPluginAsync } from "fastify";
 
 const postsRoutes: FastifyPluginAsync = async (fastify) => {
-  const service = postsService(fastify as any)
+  fastify.get("/posts", async () => {
+    // If DB is available
+    const rows = await fastify.transactions.posts.getAll();
 
-  fastify.post<{ Body: CreatePostDto }>("/posts", async (request, reply) => {
-    const newPost = await service.create(request.body)
-    return reply.code(201).send(newPost)
-  })
+    const items = (rows ?? []).map((r: any) => ({
+      id: r.id,
+      username: r.username ?? "webeet_user",
+      caption: r.caption ?? "",
+      img_url: r.img_url ?? "", // IMPORTANT: frontend expects img_url
+      created_at: r.created_at ?? r.createdAt ?? null,
+    }));
 
-  fastify.get("/posts", async (_request, reply) => {
-    const posts = await (service as any).getAll()
-    return reply.code(200).send(posts)
-  })
-}
+    return { ok: true, items };
+  });
+};
 
-export default postsRoutes
+export default postsRoutes;

@@ -1,15 +1,35 @@
 import type { FastifyInstance } from "fastify"
-import type { CreatePostDto } from "./posts.types"
+import { fileStorageService } from "../../common/file-storage.service"
+
+type CreatePostServiceArgs = {
+  caption: string;
+  imageFile?: { buffer: Buffer; filename: string };
+};
 
 export const postsService = (fastify: FastifyInstance) => {
   return {
-    create: async (postData: CreatePostDto) => {
+    create: async (data: CreatePostServiceArgs) => {
       fastify.log.info("Creating a new post")
-      return fastify.transactions.posts.create(postData)
+
+      let img_url = "";
+
+      // Save image if provided
+      if (data.imageFile) {
+        img_url = await fileStorageService.saveImage(
+          data.imageFile.buffer,
+          data.imageFile.filename
+        );
+      }
+
+      // Insert into DB (must match SQL fields exactly!)
+      return fastify.transactions.posts.create({
+        img_url,
+        caption: data.caption,
+      });
     },
+
     getAll: async () => {
-      fastify.log.info("Getting all posts")
-      return fastify.transactions.posts.getAll()
+      return fastify.transactions.posts.getAll();
     },
-  }
-}
+  };
+};

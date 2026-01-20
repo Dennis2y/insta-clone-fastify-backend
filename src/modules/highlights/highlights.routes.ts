@@ -1,33 +1,36 @@
 import type { FastifyInstance } from "fastify";
-import { highlightsService } from "./highlights.service";
+import fs from "fs/promises";
+import path from "path";
 
-/**
- * Routes for highlights:
- * - GET /highlights
- * - GET /highlights/:id
- */
-export default async function highlightsRoutes(fastify: FastifyInstance) {
-  const service = highlightsService(fastify);
+export default async function highlightsRoutes(app: FastifyInstance) {
+  app.get("/highlights", async () => {
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
 
-  fastify.get("/highlights", async (_req, reply) => {
-    const data = service.getAll();
-    return reply.code(200).send(data);
-  });
-
-  fastify.get("/highlights/:id", async (req, reply) => {
-    // Fastify params are untyped here, so we coerce safely
-    const idRaw = (req.params as any).id;
-    const id = Number(idRaw);
-
-    if (!Number.isFinite(id)) {
-      return reply.code(400).send({ message: "Invalid id" });
+    let files: string[] = [];
+    try {
+      files = await fs.readdir(uploadsDir);
+    } catch {
+      files = [];
     }
 
-    const item = service.getById(id);
-    if (!item) {
-      return reply.code(404).send({ message: "Highlight not found" });
-    }
+    const images = files
+      .filter((f) => /\.(png|jpg|jpeg|webp)$/i.test(f))
+      .map((f) => `/uploads/${encodeURIComponent(f)}`);
 
-    return reply.code(200).send(item);
+    const covers =
+      images.length > 0
+        ? images.slice(0, 12)
+        : ["/uploads/demo-17.jpg", "/uploads/demo-18.jpg", "/uploads/demo-19.jpg", "/uploads/demo-2.jpg"];
+
+    const titles = ["Vacation", "Team", "Family", "Business", "Nature", "Moments", "Friends", "Work", "Travel", "Food", "Pets", "Life"];
+
+    return {
+      ok: true,
+      items: covers.slice(0, 12).map((cover, idx) => ({
+        id: idx + 1,
+        title: titles[idx] ?? `Highlight ${idx + 1}`,
+        cover,
+      })),
+    };
   });
 }
