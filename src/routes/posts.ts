@@ -31,7 +31,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
       created_at: r.created_at ?? r.createdAt ?? null,
     }));
 
-    const hasAnyImage = items.some((p) => typeof p.img_url === "string" && p.img_url.trim().length > 0);
+    const hasAnyImage = items.some((p: any) => typeof p.img_url === "string" && p.img_url.trim().length > 0);
 
     if (!hasAnyImage) {
       const urls = await listUploadImages();
