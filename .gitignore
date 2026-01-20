@@ -1,16 +1,20 @@
 # dependencies
-node_modules/
-
-# builds
-dist/
-build/
-.vite/
-.cache/
+node_modules
 
 # env
 .env
-.env.local
-.env.*.local
+.env.*
+
+# db / local data
+app.db
+*.db
+
+# uploads (local runtime files)
+public/uploads
+public/uploads/**
+
+# OS
+.DS_Store
 
 # logs
 npm-debug.log*
@@ -18,14 +22,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# OS
-.DS_Store
+# local db
+app.db
+*.db
 
-# SQLite / local data
-*.sqlite
-*.sqlite3
-database.db
-
-# accidental scratch files
-somefile
-insta-clone-react-frontend/
+# uploads
+public/uploads
+public/uploads/*
