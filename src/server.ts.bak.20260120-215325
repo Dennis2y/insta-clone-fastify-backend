@@ -17,6 +17,7 @@ import searchRoutes from "./modules/search/search.routes";
 
 const fastify = Fastify({ logger: true });
 
+const port = Number(process.env.PORT) || 3000;
 
 async function start() {
   /** ---------------- CORS ---------------- */
@@ -58,17 +59,16 @@ async function start() {
   await fastify.register(searchRoutes, { prefix: "/api" });
   await fastify.register(uploadRoutes, { prefix: "/api" });
 
+  await fastify.ready();
+  console.log(fastify.printRoutes());
 
-    await fastify.ready();
-    console.log(fastify.printRoutes());
+  await fastify.listen({
+    port,
+    host: "127.0.0.1", // later for deployment change to "0.0.0.0"
+  });
 
-    const port = Number(process.env.PORT) || 3000;
-    const host = process.env.HOST || "0.0.0.0";
-
-    await fastify.listen({ port, host });
-
-    console.log("🚀 Server is running at http://" + host + ":" + port);
-  }
+  console.log(`🚀 Server is running at http://127.0.0.1:${port}`);
+}
 
 start().catch((err) => {
   fastify.log.error(err);
