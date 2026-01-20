@@ -10,7 +10,7 @@ async function runInsert(db: any, sql: string, params: any[]) {
     return Number(info?.lastInsertRowid || info?.lastID || 0);
   }
   return await new Promise<number>((resolve, reject) => {
-    db.run(sql, params, function (this: any, err: any) {
+    db.run(sql, params, function (err: any) {
       if (err) reject(err);
       else resolve(Number((this as any)?.lastID || 0));
     });

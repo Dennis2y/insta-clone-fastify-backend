@@ -1,4 +1,3 @@
-import fs from "fs";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
@@ -34,12 +33,9 @@ async function start() {
     },
   });
 
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-fs.mkdirSync(uploadsDir, { recursive: true });
-
-/** ---------------- STATIC UPLOADS ---------------- */
+  /** ---------------- STATIC UPLOADS ---------------- */
   await fastify.register(fastifyStatic, {
-    root: uploadsDir,
+    root: path.join(__dirname, "..", "public", "uploads"),
     prefix: "/uploads/",
     // optional, but helps if you later add any /uploads route
     decorateReply: false,

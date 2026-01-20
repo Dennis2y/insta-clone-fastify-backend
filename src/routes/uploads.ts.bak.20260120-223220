@@ -9,9 +9,9 @@ function listUploads(): string[] {
   if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
-    .filter((f: string) => ALLOWED.has(path.extname(f).toLowerCase()))
+    .filter((f) => ALLOWED.has(path.extname(f).toLowerCase()))
     .sort()
-    .map((f: string) => `/uploads/${f}`);
+    .map((f) => `/uploads/${f}`);
 }
 
 export default async function uploadsRoutes(app: FastifyInstance) {
